@@ -8,6 +8,7 @@ library(corrplot)       # For visualizing the correlation matrix
 library(caret)          # For data splitting
 library(glmnet)         # For Lasso regression
 library(mgcv)           # For Generalized Additive Models (GAM)
+library(randomForest)   # For Random Forest
 
 
 # ===============================================================
@@ -146,13 +147,41 @@ rmse_gam <- RMSE(pred_gam, test_data$strength)
 cat(paste("\nGAM Model Test RMSE:", round(rmse_gam, 2), "MPa\n\n"))
 
 
+# --- 4.4 Model 4: Random Forest ---
+cat("--- Training Model 3: Random Forest ---\n")
+# Tune to get number of variables randomly sampled at each split (mtry)
+tuned_rf <- tuneRF(x = train_data[-which(names(train_data) == "strength")],
+                   y = train_data$strength, ntreeTry = 500, stepFactor = 1.5,
+                   improve = 0.01)
+
+# Get the best mtry
+best_mtry <- tuned_rf[which.min(tuned_rf[, "OOBError"]), "mtry"]
+print(paste("Best mtry:", best_mtry))
+
+# Train the final Random Forest model with the best mtry
+rf_model <- randomForest(strength ~ ., data = train_data, mtry = best_mtry,
+                         ntree = 500, importance = TRUE)
+print(rf_model)
+
+# Visualize RF Feature Importance
+png("rf_importance_plot.png", width = 800, height = 600, res = 120)
+varImpPlot(rf_model, main = "Random Forest Feature Importance")
+dev.off()
+
+# Evaluate on test data
+pred_rf <- predict(rf_model, test_data)
+rmse_rf <- RMSE(pred_rf, test_data$strength)
+cat(paste("\nRF Model Test RMSE:", round(rmse_rf, 2), "MPa\n\n"))
+
+
 # ===============================================================
 # Section 5: Final Results Summary
 # ===============================================================
 cat("--- FINAL RESULTS ---\n")
 results_summary <- data.frame(
   Model = c("Multiple Linear Regression", "Lasso Regression",
-            "Generalized Additive Model"),
-  Test_RMSE = c(round(rmse_mlr, 2), round(rmse_lasso, 2), round(rmse_gam, 2))
+            "Generalized Additive Model", "Random Forest"),
+  Test_RMSE = c(round(rmse_mlr, 2), round(rmse_lasso, 2), round(rmse_gam, 2),
+                round(rmse_rf, 2))
 )
 print(results_summary)
