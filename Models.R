@@ -49,7 +49,7 @@ cat("--- 2. Performing EDA and Generating Plots ---\n")
 # 2.1 Correlation Matrix Heatmap (for internal analysis)
 cor_matrix <- cor(concrete_data)
 png("correlation_heatmap.png", width=800, height=800, res=100)
-corrplot(cor_matrix, method="color", type="upper", order="hclust",
+corrplot(cor_matrix, method="color", type="full", order="hclust",
          addCoef.col="black", tl.col="black", tl.srt=45, diag=FALSE)
 dev.off()
 cat("Saved 'correlation_heatmap.png' to working directory.\n")
@@ -123,7 +123,7 @@ rmse_lasso <- RMSE(pred_lasso, test_data$strength)
 cat(paste("\nLasso Model Test RMSE:", round(rmse_lasso, 2), "MPa\n\n"))
 
 # Option 2:
-# Define a reusable 10-fold CV strategy for training
+# Define a reusable 10-fold Cross-Validation strategy for training
 train_control <- trainControl(method="cv", number=10)
 lasso_model <- train(strength ~ ., data=train_data, method="glmnet",
                      trControl=train_control,
