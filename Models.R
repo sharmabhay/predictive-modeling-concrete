@@ -50,7 +50,7 @@ cat("--- 2. Performing EDA and Generating Plots ---\n")
 cor_matrix <- cor(concrete_data)
 png("plots/correlation_heatmap_r.png", width=800, height=800, res=100)
 corrplot(cor_matrix, method="color", type="full", order="hclust",
-         addCoef.col="black", tl.col="black", tl.srt=45, diag=FALSE)
+         addCoef.col="black", tl.col="black", tl.srt=30, diag=FALSE)
 dev.off()
 cat("Saved 'correlation_heatmap.png' to working directory.\n")
 
