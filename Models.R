@@ -205,4 +205,3 @@ results_summary <- data.frame(
               round(rmse_gam, 2), round(rmse_rf, 2))
 )
 print(results_summary)
- 
