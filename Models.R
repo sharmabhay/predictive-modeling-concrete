@@ -48,7 +48,7 @@ cat("--- 2. Performing EDA and Generating Plots ---\n")
 
 # 2.1 Correlation Matrix Heatmap (for internal analysis)
 cor_matrix <- cor(concrete_data)
-png("correlation_heatmap.png", width=800, height=800, res=100)
+png("plots/correlation_heatmap_r.png", width=800, height=800, res=100)
 corrplot(cor_matrix, method="color", type="full", order="hclust",
          addCoef.col="black", tl.col="black", tl.srt=45, diag=FALSE)
 dev.off()
@@ -63,7 +63,7 @@ strength_age_plot <- ggplot(concrete_data, aes(x=age, y=strength)) +
   theme_bw(base_size=14) +
   theme(plot.title=element_text(hjust=0.5))
 
-ggsave("strength_vs_age.png", plot=strength_age_plot, width=7, height=5,
+ggsave("plots/strength_vs_age_r.png", plot=strength_age_plot, width=7, height=5,
        dpi=150)
 print(strength_age_plot)
 cat("Saved 'strength_vs_age.png' to working directory.\n\n")
@@ -113,7 +113,7 @@ best_lambda <- cv_lasso$lambda.min
 cat(paste("Best Lambda from 10-fold CV:", round(best_lambda, 3), "\n"))
 
 # Display the coefficients selected by Lasso
-lasso_coef <- coef(cv_lasso, s = best_lambda)
+lasso_coef <- coef(cv_lasso, s=best_lambda)
 cat("\nLasso Coefficients at Optimal Lambda:\n")
 print(lasso_coef)
 
@@ -152,7 +152,7 @@ cat("GAM Model Summary:\n")
 print(summary(gam_model))
 
 # Generate and save the component plots
-png("gam_plots.png", width=1200, height=700, res=120)
+png("plots/gam_plots_r.png", width=1200, height=700, res=120)
 par(mfrow=c(2, 4), mar=c(4.5, 4.5, 2, 1), oma=c(0, 0, 2, 0))
 plot(gam_model, se=TRUE, col="darkgreen", rug=TRUE, cex.lab=1.2)
 mtext("Partial Effects from GAM Model", outer=TRUE, cex=1.5)
@@ -167,7 +167,7 @@ cat(paste("\nGAM Model Test RMSE:", round(rmse_gam, 2), "MPa\n\n"))
 
 
 # --- 4.4 Model 4: Random Forest ---
-cat("--- Training Model 3: Random Forest ---\n")
+cat("--- Training Model 4: Random Forest ---\n")
 # Tune to get number of variables randomly sampled at each split (mtry)
 tuned_rf <- tuneRF(x=train_data[-which(names(train_data) == "strength")],
                    y=train_data$strength, ntreeTry=500, stepFactor=1.5,
@@ -183,7 +183,7 @@ rf_model <- randomForest(strength ~ ., data=train_data, mtry=best_mtry,
 print(rf_model)
 
 # Visualize RF Feature Importance
-png("rf_importance_plot.png", width=800, height=600, res=120)
+png("plots/rf_importance_plot_r.png", width=800, height=600, res=120)
 varImpPlot(rf_model, main="Random Forest Feature Importance")
 dev.off()
 
@@ -205,3 +205,4 @@ results_summary <- data.frame(
               round(rmse_gam, 2), round(rmse_rf, 2))
 )
 print(results_summary)
+ 
