@@ -28,7 +28,7 @@ This analysis uses [Concrete Compressive Strength dataset](https://archive.ics.u
 ## Visualizations Generated
 
 * **`correlation_heatmap`**: A correlation plot showing correlations between each variable.
-* **`strength_vs_age`**: A scatter plot showing strong, non-linear relationship between age of concrete and its final compressive strength.
+* **`strength_vs_age`**: A scatter plot showing a strong, non-linear relationship between age of concrete and its final compressive strength.
 * **`gam_plots`**: Partial dependence plots from GAM, illustrating individual effect of each ingredient on strength.
 * **`rf_importance_plot`**: A feature importance plot from Random Forest model, ranking predictors by their contribution to predictive accuracy.
 
