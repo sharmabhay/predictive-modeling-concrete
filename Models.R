@@ -10,6 +10,8 @@ library(glmnet)         # For Lasso regression
 library(mgcv)           # For Generalized Additive Models (GAM)
 library(randomForest)   # For Random Forest
 
+set.seed(420)  # For reproducibility
+
 
 # ===============================================================
 # Section 1: Data Loading and Preparation
@@ -52,7 +54,7 @@ png("plots/correlation_heatmap_r.png", width=800, height=800, res=100)
 corrplot(cor_matrix, method="color", type="full", order="hclust",
          addCoef.col="black", tl.col="black", tl.srt=30, diag=FALSE)
 dev.off()
-cat("Saved 'correlation_heatmap.png' to working directory.\n")
+cat("Saved 'correlation_heatmap_r.png' to working directory.\n")
 
 # 2.2 Scatter Plot
 strength_age_plot <- ggplot(concrete_data, aes(x=age, y=strength)) +
@@ -66,7 +68,7 @@ strength_age_plot <- ggplot(concrete_data, aes(x=age, y=strength)) +
 ggsave("plots/strength_vs_age_r.png", plot=strength_age_plot, width=7, height=5,
        dpi=150)
 print(strength_age_plot)
-cat("Saved 'strength_vs_age.png' to working directory.\n\n")
+cat("Saved 'strength_vs_age_r.png' to working directory.\n\n")
 
 
 # ===============================================================
@@ -100,6 +102,7 @@ cat(paste("Linear Model Test RMSE:", round(rmse_mlr, 2), "MPa\n\n"))
 
 # --- 4.2 Model 2: Lasso Regression ---
 cat("--- Training Model 2: Lasso Regression ---\n")
+
 # Option 1:
 # Prepare data matrices required by glmnet
 x_train <- model.matrix(strength ~ . - 1, data=train_data)
@@ -142,10 +145,11 @@ cat(paste("\nLasso Model 2 Test RMSE:", round(rmse_lasso2, 2), "MPa\n\n"))
 
 # --- 4.3 Model 3: Generalized Additive Model (GAM) ---
 cat("--- Training Model 3: Generalized Additive Model ---\n")
+
 # Fit a GAM with smoothing splines for each predictor
 gam_model <- gam(strength ~ s(cement) + s(slag) + s(ash) + s(water) + 
                    s(superplasticizer) + s(coarse_agg) + s(fine_agg) + s(age),
-                 data = train_data)
+                 data=train_data)
 
 # Print GAM summary to see significance of non-linear terms
 cat("GAM Model Summary:\n")
@@ -158,7 +162,7 @@ plot(gam_model, se=TRUE, col="darkgreen", rug=TRUE, cex.lab=1.2)
 mtext("Partial Effects from GAM Model", outer=TRUE, cex=1.5)
 dev.off()
 par(mfrow=c(1, 1))
-cat("\nSaved 'gam_plots.png' to working directory.\n")
+cat("\nSaved 'gam_plots_r.png' to working directory.\n")
 
 # Evaluate GAM on test data
 pred_gam <- predict(gam_model, newdata=test_data)
@@ -168,6 +172,7 @@ cat(paste("\nGAM Model Test RMSE:", round(rmse_gam, 2), "MPa\n\n"))
 
 # --- 4.4 Model 4: Random Forest ---
 cat("--- Training Model 4: Random Forest ---\n")
+
 # Tune to get number of variables randomly sampled at each split (mtry)
 tuned_rf <- tuneRF(x=train_data[-which(names(train_data) == "strength")],
                    y=train_data$strength, ntreeTry=500, stepFactor=1.5,
@@ -199,7 +204,7 @@ cat(paste("\nRF Model Test RMSE:", round(rmse_rf, 2), "MPa\n\n"))
 cat("--- FINAL RESULTS ---\n")
 results_summary <- data.frame(
   Model=c("Multiple Linear Regression (MLR)", "Lasso Regression",
-          "Lasso Regression 2",  "Generalized Additive Model (GAM)",
+          "Lasso Regression 2", "Generalized Additive Model (GAM)",
           "Random Forest"),
   Test_RMSE=c(round(rmse_mlr, 2), round(rmse_lasso, 2), round(rmse_lasso2, 2),
               round(rmse_gam, 2), round(rmse_rf, 2))
