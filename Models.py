@@ -1,14 +1,14 @@
 # Load necessary libraries
-from matplotlib import axes
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, RidgeCV, LassoCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from pygam import LinearGAM, s
+from xgboost import XGBRegressor
 
 np.random.seed(420)  # For reproducibility
 
@@ -92,6 +92,8 @@ print(f"Test set size: {X_test.shape[0]} observations\n")
 print("--- Training Model 1: Multiple Linear Regression ---")
 mlr_model = LinearRegression()
 mlr_model.fit(X_train, y_train)
+
+# Evaluate MLR on test data
 pred_mlr = mlr_model.predict(X_test)
 rmse_mlr = np.sqrt(mean_squared_error(y_test, pred_mlr))
 r2_mlr = r2_score(y_test, pred_mlr)
@@ -106,6 +108,7 @@ lasso_cv = LassoCV(cv=10, random_state=420)
 lasso_cv.fit(X_train, y_train)
 print(f"Best Alpha (Lambda) from 10-fold CV: {lasso_cv.alpha_:.3f}")
 
+# Evaluate Lasso on test data
 pred_lasso = lasso_cv.predict(X_test)
 rmse_lasso = np.sqrt(mean_squared_error(y_test, pred_lasso))
 r2_lasso = r2_score(y_test, pred_lasso)
@@ -176,11 +179,24 @@ plt.savefig('plots/rf_importance_plot_py.png', dpi=150)
 plt.close()
 print("Saved 'rf_importance_plot_py.png' to working directory.\n")
 
-# Evaluate on test data
+# Evaluate RF on test data
 pred_rf = rf_model.predict(X_test)
 rmse_rf = np.sqrt(mean_squared_error(y_test, pred_rf))
 r2_rf = r2_score(y_test, pred_rf)
 print(f"RF Model Test RMSE: {rmse_rf:.2f} MPa\n")
+
+
+# --- 4.5 Model 5: Extreme Gradient Boosting (XGBoost) ---
+print("--- Training Model 5: Extreme Gradient Boosting ---")
+xgb_model = XGBRegressor(n_estimators=1000, max_depth=5, learning_rate=0.05, subsample=0.8,
+                         colsample_bytree=0.8, random_state=420, n_jobs=-1)
+xgb_model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
+
+# Evaluate XGBoost on test data
+pred_xgb = xgb_model.predict(X_test)
+rmse_xgb = np.sqrt(mean_squared_error(y_test, pred_xgb))
+r2_xgb = r2_score(y_test, pred_xgb)
+print(f"XGBoost Model Test RMSE: {rmse_xgb:.2f} MPa\n")
 
 
 # ===============================================================
@@ -189,13 +205,11 @@ print(f"RF Model Test RMSE: {rmse_rf:.2f} MPa\n")
 print("--- FINAL RESULTS ---")
 results_summary = pd.DataFrame({
     "Model": ["Multiple Linear Regression (MLR)", "Lasso Regression",
-              "Generalized Additive Model (GAM)", "Random Forest"],
-    "Test RMSE": [rmse_mlr, rmse_lasso, rmse_gam, rmse_rf],
-    "Test R^2": [r2_mlr, r2_lasso, r2_gam, r2_rf]
+              "Generalized Additive Model (GAM)", "Random Forest",
+              "Extreme Gradient Boosting (XGBoost)"],
+    "Test RMSE": [rmse_mlr, rmse_lasso, rmse_gam, rmse_rf, rmse_xgb],
+    "Test R^2": [r2_mlr, r2_lasso, r2_gam, r2_rf, r2_xgb]
 })
 results_summary['Test RMSE'] = results_summary['Test RMSE'].round(2)
 results_summary['Test R^2'] = results_summary['Test R^2'].round(3)
 print(results_summary)
-
-
-# TODO: add Deep Learning model for additional comparison?
