@@ -213,3 +213,9 @@ results_summary = pd.DataFrame({
 results_summary['Test RMSE'] = results_summary['Test RMSE'].round(2)
 results_summary['Test R^2'] = results_summary['Test R^2'].round(3)
 print(results_summary)
+
+## Computational Efficiency Notes:
+# Training/Prediction Time Rankings (from fastest to slowest) - MLR, Lasso, GAM, RF, XGBoost
+# Memory Usage Rankings (from lowest to highest) - MLR, Lasso, GAM, RF, XGBoost
+# Accuracy Rankings (from lowest to highest RMSE) - XGBoost, RF, GAM, Lasso, MLR
+# Variance Explained Rankings (from highest to lowest R^2) - XGBoost, RF, GAM, Lasso, MLR
