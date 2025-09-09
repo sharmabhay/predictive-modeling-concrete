@@ -22,6 +22,7 @@ This analysis uses [Concrete Compressive Strength dataset](https://archive.ics.u
     * **Lasso Regression:** A regularized model for automatic feature selection.
     * **Generalized Additive Model (GAM):** A flexible model designed to capture non-linear relationships using smoothing splines.
     * **Random Forest:** An ensemble model used to maximize predictive accuracy and capture complex interactions between variables.
+    * **Extreme Gradient Boosting (XGBoost):** A gradient boosting ensemble model, often a top performer on tabular data.
 4.  **Evaluation:** All models evaluated on unseen test set, and their performance compared using **Root Mean Squared Error (RMSE)**.
 
 
@@ -34,8 +35,8 @@ This analysis uses [Concrete Compressive Strength dataset](https://archive.ics.u
 
 ### Key Findings:
 
-* **Best for Prediction:** **Random Forest** achieved lowest RMSE. Its ability to model complex interactions makes it the most accurate predictor.
-* **Best for Interpretation:** **Generalized Additive Model (GAM)** provided best balance of performance and interpretability, with an excellent RMSE and clear partial dependence plots to explain non-linear effects of each ingredient.
+* **Best for Prediction:** **XGBoost** achieved lowest RMSE, making it most accurate for predictive modeling. It also offered an excellent balance of speed and model size compared to **Random Forest**.
+* **Best for Interpretation:** **GAM** provided best balance of performance and interpretability, with an excellent RMSE and clear partial dependence plots to explain non-linear effects of each ingredient.
 
 
 ## Getting Started
