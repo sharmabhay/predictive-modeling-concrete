@@ -95,6 +95,8 @@ cat(paste("Test set size:", nrow(test_data), "observations\n\n"))
 # --- 4.1 Model 1: Multiple Linear Regression (MLR - Baseline) ---
 cat("--- Training Model 1: Multiple Linear Regression ---\n")
 mlr_model <- lm(strength ~ ., data=train_data)
+
+# Evaluate MLR on test data
 pred_mlr <- predict(mlr_model, newdata=test_data)
 rmse_mlr <- RMSE(pred_mlr, test_data$strength)
 cat(paste("Linear Model Test RMSE:", round(rmse_mlr, 2), "MPa\n\n"))
@@ -120,7 +122,7 @@ lasso_coef <- coef(cv_lasso, s=best_lambda)
 cat("\nLasso Coefficients at Optimal Lambda:\n")
 print(lasso_coef)
 
-# Evaluate on test data
+# Evaluate Lasso on test data
 pred_lasso <- predict(cv_lasso, s=best_lambda, newx=x_test)
 rmse_lasso <- RMSE(pred_lasso, test_data$strength)
 cat(paste("\nLasso Model Test RMSE:", round(rmse_lasso, 2), "MPa\n\n"))
@@ -137,7 +139,7 @@ lasso_model <- train(strength ~ ., data=train_data, method="glmnet",
 print(lasso_model$bestTune)
 plot(lasso_model) # Shows how RMSE changes with lambda
 
-# Evaluate on test data
+# Evaluate 2nd Lasso on test data
 pred_lasso2 <- predict(lasso_model, test_data)
 rmse_lasso2 <- RMSE(pred_lasso2, test_data$strength)
 cat(paste("\nLasso Model 2 Test RMSE:", round(rmse_lasso2, 2), "MPa\n\n"))
@@ -192,7 +194,7 @@ png("plots/rf_importance_plot_r.png", width=800, height=600, res=120)
 varImpPlot(rf_model, main="Random Forest Feature Importance")
 dev.off()
 
-# Evaluate on test data
+# Evaluate RF on test data
 pred_rf <- predict(rf_model, test_data)
 rmse_rf <- RMSE(pred_rf, test_data$strength)
 cat(paste("\nRF Model Test RMSE:", round(rmse_rf, 2), "MPa\n\n"))
